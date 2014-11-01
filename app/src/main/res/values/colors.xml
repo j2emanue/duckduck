@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <color name="error_message">#ffc00000</color>
+    <color name="translucent_red">#80ff0000</color>
+    <color name="gold">#FFD700</color>
+    <color name="black">#000</color>
+    <color name="blue">#00f</color>
+    <color name="baby_blue">#0080FF</color>
+    <color name="red">#f00</color>
+    <color name="white">#fff</color>
+    <color name="green">#008000</color>
+    <color name="light_font">#FBFBFB</color>
+    <color name="grey_font">#ff9e9e9e</color>
+    <color name="text_shadow">#7F000000</color>
+    <color name="text_shadow_white">#FFFFFF</color>
+</resources>
