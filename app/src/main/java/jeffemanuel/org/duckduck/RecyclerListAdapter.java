@@ -34,8 +34,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         @Override
         public boolean onLongClick(View view) {
             mDataset.remove(getPosition());
-            notifyDataSetChanged();
-
+            //notifyDataSetChanged();
+            //instead notify that a item is removed to do animation
+            notifyItemRemoved(getPosition());
             return false;
         }
     }

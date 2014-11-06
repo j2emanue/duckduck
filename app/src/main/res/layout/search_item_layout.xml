@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="7dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
 
 
         <com.android.volley.toolbox.NetworkImageView

@@ -62,7 +62,6 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-
         return rootView;
     }
 
