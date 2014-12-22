@@ -8,6 +8,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
+import java.util.Arrays;
+import java.util.List;
+
+import dagger.ObjectGraph;
+import jeffemanuel.org.modules.ActivityModule;
+
 /**
  * Created by J Emanuel on 10/30/14.
  */
@@ -18,13 +24,16 @@ public class MainApplication extends Application {
 
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
-
+    private ObjectGraph objectGraph;
 
     private static MainApplication mInstance;
 
     @Override
     public void onCreate() {
         super.onCreate();
+       Object[] modules = getModules().toArray();
+        objectGraph = ObjectGraph.create(modules);
+       // objectGraph.inject(this);
         mInstance = this;
     }
 
@@ -64,5 +73,23 @@ public class MainApplication extends Application {
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(tag);
         }
+    }
+    protected List<Object> getModules() {
+        return Arrays.<Object>asList(
+                new ActivityModule(this)
+
+        );
+    }
+
+    //public ObjectGraph getObjectGraph() {
+      //  return this.objectGraph;
+    //}
+
+    public void inject(Object object) {
+        objectGraph.inject(object);
+    }
+
+    public void addtoGraph(Object object) {
+        objectGraph.plus(object);
     }
 }

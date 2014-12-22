@@ -9,18 +9,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import jeffemanuel.org.base.BaseActivity;
+import javax.inject.Inject;
 
+import butterknife.ButterKnife;
+import jeffemanuel.org.base.BaseActivity;
 
 public abstract class ListPageActivity extends BaseActivity {
 
     private SoundPool mSoundPool;
     private int mSoundID;
-    boolean plays = false, loaded = false;
+    boolean loaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ButterKnife.inject(this);
 
     }
 
@@ -42,25 +46,20 @@ public abstract class ListPageActivity extends BaseActivity {
     }
 
 
+@Inject AudioManager am;
     public void playBrandSound() {
-
-        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
         int volume_level= am.getStreamVolume(AudioManager.STREAM_MUSIC);
-
         // Is the sound loaded already ?
-        if (loaded && !plays) {
+        if (loaded ) {
             mSoundPool.play(mSoundID, volume_level, volume_level, 1, 0, 1f);
-            plays = true;
-
         }
     }
 
-    public void stopBrandSound() {
+    public void stopBrandSound(Object notUsed) {
 
-        if (mSoundPool != null && plays) {
+        if (mSoundPool != null ) {
             mSoundPool.stop(mSoundID);
             mSoundPool.release();
-            plays = false;
         }
 
     }
@@ -69,6 +68,8 @@ public abstract class ListPageActivity extends BaseActivity {
      *
      * @param msg text to show in toast
      */
+
+
     public void showToast(String msg){
 
         LayoutInflater inflater = getLayoutInflater();

@@ -13,7 +13,7 @@ public class MainActivity extends ListPageActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new SummaryFragment())
+                    .add(R.id.container, new SummaryFragment(),"SummaryFragment")
                     .commit();
         }
 

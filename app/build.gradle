@@ -1,5 +1,7 @@
-apply plugin: 'com.android.application'
-
+//apply plugin: 'com.android.application'
+//apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'android'
+apply plugin: 'android-apt'
 android {
     compileSdkVersion 21
     buildToolsVersion "20.0.0"
@@ -13,16 +15,32 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //runProguard false
+          //  proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
     compile files('libs/volley.jar')
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    apt "org.androidannotations:androidannotations:3.0+"          // add these
+    compile "org.androidannotations:androidannotations-api:3.0+"  // two lines
     compile 'com.android.support:appcompat-v7:21.0.0'
     compile 'com.android.support:recyclerview-v7:21.0.0'
     compile 'com.android.support:cardview-v7:21.0.0'
+    compile 'com.jakewharton:butterknife:6.0.0'
+    compile 'com.squareup.dagger:dagger:1.2.2'
+    compile 'com.squareup:javawriter:2.5.1'
+    compile 'javax.inject:javax.inject:1'
+    compile 'org.mockito:mockito-all:1.10.8'
+    apt 'com.squareup.dagger:dagger-compiler:1.2.2'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+apt {
+    arguments {
+
+        resourcePackageName "jeffemanuel.org.duckduck"
+    }
 }

@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +27,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created  on 10/31/14.
  */
@@ -40,27 +44,34 @@ import java.util.List;
 public class SummaryFragment extends Fragment implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
-    private RecyclerView.LayoutManager mLayoutManager;
+
     private RecyclerListAdapter mAdapter;
-    private RecyclerView mRecyclerView;
+    @Inject RecyclerView.LayoutManager mLayoutManager;
+
+    @InjectView(R.id.my_recycler_view) RecyclerView mRecyclerView;
+    @InjectView(R.id.et_query) EditText et_query;
+    @InjectView(R.id.btn_go) Button goBtn;
 
     public SummaryFragment() {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
+        ((MainApplication) getActivity().getApplication()).inject(this);
+        ButterKnife.inject(this, rootView);
 
-        Button goBtn = (Button) rootView.findViewById(R.id.btn_go);
         goBtn.setOnClickListener(this);
-
-        mRecyclerView = (RecyclerView) rootView
-                .findViewById(R.id.my_recycler_view);
-
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         return rootView;
     }
@@ -102,7 +113,6 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
 
         // Adding request to request queue
         MainApplication.getInstance().addToRequestQueue(jsonObjReq, Consts.TAG_JSON);
-
     }
 
 
@@ -152,10 +162,7 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG, e.toString());
                 e.printStackTrace();
             }
-
         }
-
-
         mAdapter = new RecyclerListAdapter(searchItems);
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -166,15 +173,12 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+
     public void onClick(View view) {
-        EditText query = (EditText) getView().findViewById(R.id.et_query);
 
-        if (!TextUtils.isEmpty(query.getText())) {
-            String URL = BuildURLFromUserQuery(query.getText().toString());
-
+        if (!TextUtils.isEmpty(et_query.getText())) {
+            String URL = BuildURLFromUserQuery(et_query.getText().toString());
             retrieveSearchResults(URL);
-
-
         } else
             ((ListPageActivity) getActivity()).showToast(getString(R.string.invalid));
 
@@ -185,7 +189,7 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
      * @param query users query from search entry
      * @return sample of return would be a string such as 'http://api.duckduckgo.com/?q=facebook&format=json&pretty=1'
      */
-    private String BuildURLFromUserQuery(String query) {
+    protected String BuildURLFromUserQuery(String query) {
 
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(Consts.SCHEME)
