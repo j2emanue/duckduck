@@ -75,21 +75,21 @@ public class MainApplication extends Application {
         }
     }
     protected List<Object> getModules() {
-        return Arrays.<Object>asList(
-                new ActivityModule(this)
 
+        return Arrays.<Object>asList(
+                new ActivityModule(this)//our global module provider library
         );
     }
-
-    //public ObjectGraph getObjectGraph() {
-      //  return this.objectGraph;
-    //}
 
     public void inject(Object object) {
         objectGraph.inject(object);
     }
 
-    public void addtoGraph(Object object) {
-        objectGraph.plus(object);
+    /*makes it easier on memory to create scoped graphs. each activity should override
+    getModule and provide its own module. Add that module to the graph by calling
+    this method which creates a copy of the current graph.
+     */
+    public  ObjectGraph createScopedGraph(Object... module) {
+        return  objectGraph.plus(module);
     }
 }

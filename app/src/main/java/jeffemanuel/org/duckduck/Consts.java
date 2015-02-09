@@ -1,6 +1,6 @@
 package jeffemanuel.org.duckduck;
 
-import jeffemanuel.org.base.BaseConstants;
+import jeffemanuel.org.common.BaseConstants;
 
 
 public class Consts extends BaseConstants {

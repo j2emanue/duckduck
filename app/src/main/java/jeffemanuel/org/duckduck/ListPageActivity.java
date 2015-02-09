@@ -12,7 +12,7 @@ import android.widget.Toast;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import jeffemanuel.org.base.BaseActivity;
+import jeffemanuel.org.common.BaseActivity;
 
 public abstract class ListPageActivity extends BaseActivity {
 
@@ -23,9 +23,7 @@ public abstract class ListPageActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         ButterKnife.inject(this);
-
     }
 
 
@@ -55,15 +53,6 @@ public abstract class ListPageActivity extends BaseActivity {
         }
     }
 
-    public void stopBrandSound(Object notUsed) {
-
-        if (mSoundPool != null ) {
-            mSoundPool.stop(mSoundID);
-            mSoundPool.release();
-        }
-
-    }
-
     /**
      *
      * @param msg text to show in toast
@@ -71,7 +60,6 @@ public abstract class ListPageActivity extends BaseActivity {
 
 
     public void showToast(String msg){
-
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast_layout,
                 (ViewGroup) findViewById(R.id.toast_layout_root));

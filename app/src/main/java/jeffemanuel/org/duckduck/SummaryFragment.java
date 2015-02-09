@@ -1,6 +1,5 @@
 package jeffemanuel.org.duckduck;
 
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,46 +11,51 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-
-/**
- * Created  on 10/31/14.
- */
-
+import jeffemanuel.org.POJOs.DuckDataModel;
+import jeffemanuel.org.POJOs.Icon;
+import jeffemanuel.org.POJOs.RelatedTopic;
+import jeffemanuel.org.common.BaseFragment;
+import jeffemanuel.org.modules.SummaryFragmentModule;
 
 /**
  * Retrieves Json response from duckduck go authority and displays
  * recyclerView on parsed response while playing a sound.
  */
-public class SummaryFragment extends Fragment implements View.OnClickListener {
+public class SummaryFragment extends BaseFragment implements View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private RecyclerListAdapter mAdapter;
-    @Inject RecyclerView.LayoutManager mLayoutManager;
+    @Inject
+    RecyclerView.LayoutManager mLayoutManager;
 
-    @InjectView(R.id.my_recycler_view) RecyclerView mRecyclerView;
-    @InjectView(R.id.et_query) EditText et_query;
-    @InjectView(R.id.btn_go) Button goBtn;
+    @InjectView(R.id.my_recycler_view)
+    RecyclerView mRecyclerView;
+    @InjectView(R.id.et_query)
+    EditText et_query;
+    @InjectView(R.id.btn_go)
+    Button goBtn;
 
+    // private BehaviorSubject<String>jsonParsedSubject= new BehaviorSubject.OnSubscribeFunc<>();
     public SummaryFragment() {
     }
 
@@ -66,7 +70,7 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_summary, container, false);
-        ((MainApplication) getActivity().getApplication()).inject(this);
+        //for view injection
         ButterKnife.inject(this, rootView);
 
         goBtn.setOnClickListener(this);
@@ -116,49 +120,52 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    private void parseData(JSONObject jsonObj) {
+    private void parseData(JSONObject jsonResponse) {
 
-        if (jsonObj == null) {
+        if (getActivity() != null && jsonResponse == null) {
             ((ListPageActivity) getActivity()).showToast(getString(R.string.no_results));
             return;
         }
-
-        JSONArray arrayTopics = null;
+        DuckDataModel dataModel = null;
+        List<RelatedTopic> arrayTopics = null;
         String definition = null;
         try {
-            arrayTopics = jsonObj.getJSONArray(Consts.RELATED_TOPICS);
-            definition = jsonObj.getString(Consts.DEFINITION);
+            GsonBuilder gsonb = new GsonBuilder();
+            Gson gson = gsonb.create();
 
-            if (!TextUtils.isEmpty(definition))
-                setDefinitionLayout(definition);
-        } catch (JSONException e) {
+            dataModel = gson.fromJson(jsonResponse.toString(), DuckDataModel.class);
+            arrayTopics = dataModel.getRelatedTopics();
+            definition = dataModel.getDefinition();
+
+            //if (!TextUtils.isEmpty(dataModel.getDefinition()))
+            //   setDefinitionLayout(definition);
+        } catch (Exception e) {
+            //maybe also print a toast
             e.printStackTrace();
+            return;
         }
 
         List<SearchItem> searchItems = new ArrayList<SearchItem>();
-
-        for (int i = 0; i != arrayTopics.length(); i++) {
+        //parse the search item data into a searchItem object and send to adapter
+        for (int i = 0; i != dataModel.getRelatedTopics().size() - 1; i++) {
 
             try {
-
                 //grab next topic
-                JSONObject topic = arrayTopics.getJSONObject(i);
+                RelatedTopic topic = arrayTopics.get(i);
 
-                if (topic.has(Consts.TEXT)) {
-                    SearchItem item = new SearchItem();
-                    item.setDefinition(definition);
+                SearchItem item = new SearchItem();
+                item.setDefinition(definition);
 
-                    //get the 'text' field
-                    item.setHeadline(topic.getString(Consts.TEXT));
+                //get the 'text' field
+                item.setHeadline(topic.getText());
 
-                    //get the image
-                    JSONObject icon = topic.getJSONObject(Consts.ICON);
-                    if (icon.has(Consts.URL))
-                        item.setImageURL(icon.getString(Consts.URL));
+                //get the image
+                Icon icon = topic.getIcon();
 
-                    searchItems.add(item);
-                }
-            } catch (JSONException e) {
+                item.setImageURL(icon.getURL());
+
+                searchItems.add(item);
+            } catch (Exception e) {
                 Log.d(TAG, e.toString());
                 e.printStackTrace();
             }
@@ -167,21 +174,13 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void setDefinitionLayout(String definition) {
-        TextView tv_def = (TextView) getView().findViewById(R.id.tv_definition);
-        getView().findViewById(R.id.card_view).setVisibility(View.VISIBLE);
-    }
-
     @Override
-
     public void onClick(View view) {
-
         if (!TextUtils.isEmpty(et_query.getText())) {
             String URL = BuildURLFromUserQuery(et_query.getText().toString());
             retrieveSearchResults(URL);
         } else
             ((ListPageActivity) getActivity()).showToast(getString(R.string.invalid));
-
     }
 
 
@@ -194,7 +193,6 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(Consts.SCHEME)
                 .authority(Consts.AUTHORITY)
-
                 .appendQueryParameter("q", query)
                 .appendQueryParameter("format", "json")
                 .appendQueryParameter("pretty", "1");
@@ -206,5 +204,10 @@ public class SummaryFragment extends Fragment implements View.OnClickListener {
         if (getActivity() != null)
             ((ListPageActivity) getActivity()).playBrandSound();
 
+    }
+
+    @Override
+    public List<Object> getModules() {
+        return Arrays.<Object>asList(new SummaryFragmentModule(getActivity()));
     }
 }

@@ -4,6 +4,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.Arrays;
+import java.util.List;
+
+import jeffemanuel.org.modules.MainActivityModule;
+
 
 public class MainActivity extends ListPageActivity {
 
@@ -22,6 +27,11 @@ public class MainActivity extends ListPageActivity {
 
         if (!isNetworkAvailable())
             showToast(getString(R.string.no_network));
+    }
+
+    @Override
+    public List<Object> getModules() {
+        return Arrays.<Object>asList(new MainActivityModule());
     }
 
 

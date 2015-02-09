@@ -1,44 +1,47 @@
 package jeffemanuel.org.modules;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.os.Vibrator;
+import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import jeffemanuel.org.duckduck.ListPageActivity;
-import jeffemanuel.org.duckduck.MainActivity;
-import jeffemanuel.org.duckduck.SummaryFragment;
 
-/**
- * Created on 12/18/14.
- */
 
 @Module(
-        library = true,
-        injects= {
-                ListPageActivity.class,
-                MainActivity.class,
-                SummaryFragment.class
-        }
-) public class ActivityModule {
-    Context context;
+        library = true)
 
-    public ActivityModule(Context context){
-        this.context = context;
-    }
+public class ActivityModule {
+
+        Context context;
+
+        public ActivityModule(Context context){
+            this.context = context;
+        }
+
+    @Provides
+    public Context provideContext(){
+    return context;
+}
+        @Provides
+        @Singleton
+        AudioManager provideAudioManager(){return (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);}
 
 
     @Provides
     @Singleton
-    AudioManager provideAudioManager(){return (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);}
+    Vibrator provideVibratorManager(){return (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);}
 
     @Provides
-    RecyclerView.LayoutManager provideLayoutManager() {
-        return new LinearLayoutManager(context);
+    SharedPreferences provideSharedPref(){
+
+       return PreferenceManager
+               .getDefaultSharedPreferences(context);
     }
 
-}
+
+    }
