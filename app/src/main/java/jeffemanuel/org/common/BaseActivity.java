@@ -35,7 +35,7 @@ public abstract class BaseActivity extends Activity implements I_ModuleProvider 
         activityGraph.inject(this);
 
     }
-    protected boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

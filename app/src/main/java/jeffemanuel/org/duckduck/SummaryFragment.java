@@ -30,9 +30,11 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import jeffemanuel.org.Mock.JsonMock;
 import jeffemanuel.org.POJOs.DuckDataModel;
 import jeffemanuel.org.POJOs.Icon;
 import jeffemanuel.org.POJOs.RelatedTopic;
+import jeffemanuel.org.common.BaseActivity;
 import jeffemanuel.org.common.BaseFragment;
 import jeffemanuel.org.modules.SummaryFragmentModule;
 import timber.log.Timber;
@@ -185,6 +187,8 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
     public void onClick(View view) {
         if (!TextUtils.isEmpty(et_query.getText())) {
             String URL = BuildURLFromUserQuery(et_query.getText().toString());
+            if(!((BaseActivity)getActivity()).isNetworkAvailable())
+                parseData(new JsonMock());
             retrieveSearchResults(URL);
         } else
             ((ListPageActivity) getActivity()).showToast(getString(R.string.invalid));

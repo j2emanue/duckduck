@@ -36,6 +36,7 @@ dependencies {
     compile 'org.mockito:mockito-all:1.10.8'
     compile 'com.netflix.rxjava:rxjava-android:0.20.7'
     compile 'com.jakewharton.timber:timber:2.4.1'
+    compile 'com.android.support:palette-v7:+'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
     apt 'com.squareup.dagger:dagger-compiler:1.2.2'

@@ -23,6 +23,7 @@
             android:layout_height="38dp"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="6dip"
+            android:elevation="8dp"
             android:scaleType="fitXY"
             />
 
