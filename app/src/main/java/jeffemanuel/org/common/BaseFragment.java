@@ -1,7 +1,6 @@
 package jeffemanuel.org.common;
 
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 
@@ -26,12 +25,5 @@ public abstract class BaseFragment extends Fragment implements I_ModuleProvider{
         activityGraph.inject(this);
 
     }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        }
-
-
 }
 

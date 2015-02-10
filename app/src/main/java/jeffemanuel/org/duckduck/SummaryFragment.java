@@ -35,6 +35,7 @@ import jeffemanuel.org.POJOs.Icon;
 import jeffemanuel.org.POJOs.RelatedTopic;
 import jeffemanuel.org.common.BaseFragment;
 import jeffemanuel.org.modules.SummaryFragmentModule;
+import timber.log.Timber;
 
 /**
  * Retrieves Json response from duckduck go authority and displays
@@ -45,6 +46,8 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
     private final String TAG = this.getClass().getSimpleName();
 
     private RecyclerListAdapter mAdapter;
+
+    //inject a layoutManager
     @Inject
     RecyclerView.LayoutManager mLayoutManager;
 
@@ -88,6 +91,7 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
      */
     private void retrieveSearchResults(String url) {
 
+        Timber.d("Retrieving search results from: %s",url);
         final ProgressDialog pDialog = new ProgressDialog(getActivity());
         pDialog.setMessage("Loading...");
         pDialog.show();
@@ -121,13 +125,14 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
 
     private void parseData(JSONObject jsonResponse) {
+        Timber.d("parsing json response: %s",jsonResponse);
 
         if (getActivity() != null && jsonResponse == null) {
             ((ListPageActivity) getActivity()).showToast(getString(R.string.no_results));
             return;
         }
-        DuckDataModel dataModel = null;
-        List<RelatedTopic> arrayTopics = null;
+        DuckDataModel dataModel;
+        List<RelatedTopic> arrayTopics;
         String definition = null;
         try {
             GsonBuilder gsonb = new GsonBuilder();
@@ -135,10 +140,7 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
             dataModel = gson.fromJson(jsonResponse.toString(), DuckDataModel.class);
             arrayTopics = dataModel.getRelatedTopics();
-            definition = dataModel.getDefinition();
 
-            //if (!TextUtils.isEmpty(dataModel.getDefinition()))
-            //   setDefinitionLayout(definition);
         } catch (Exception e) {
             //maybe also print a toast
             e.printStackTrace();
@@ -147,6 +149,11 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
         List<SearchItem> searchItems = new ArrayList<SearchItem>();
         //parse the search item data into a searchItem object and send to adapter
+        if(dataModel.getRelatedTopics().isEmpty() && getActivity()!=null ){
+            ((MainActivity)getActivity()).showToast(getString(R.string.empty_results_warning));
+            return;
+        }
+
         for (int i = 0; i != dataModel.getRelatedTopics().size() - 1; i++) {
 
             try {
@@ -203,7 +210,6 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
     private void playSound() {
         if (getActivity() != null)
             ((ListPageActivity) getActivity()).playBrandSound();
-
     }
 
     @Override

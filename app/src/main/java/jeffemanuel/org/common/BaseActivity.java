@@ -11,6 +11,7 @@ import java.util.List;
 import dagger.ObjectGraph;
 import jeffemanuel.org.I_ModuleProvider;
 import jeffemanuel.org.duckduck.MainApplication;
+import timber.log.Timber;
 
 
 public abstract class BaseActivity extends Activity implements I_ModuleProvider {
@@ -26,7 +27,7 @@ public abstract class BaseActivity extends Activity implements I_ModuleProvider 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Timber.tag(this.getClass().getSimpleName());
         // Perform scoped injection so that when this call returns all dependencies will be available for use
         // but only during activities life..
 

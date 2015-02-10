@@ -1,5 +1,6 @@
 package jeffemanuel.org.duckduck;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -7,10 +8,17 @@ import android.view.MenuItem;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import jeffemanuel.org.modules.MainActivityModule;
+import rx.Observable;
 
 
 public class MainActivity extends ListPageActivity {
+
+    @Inject
+    SharedPreferences preferences;
+    Observable<String> sharedPrefObservable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +31,6 @@ public class MainActivity extends ListPageActivity {
         }
 
         loadBrandSound();
-
 
         if (!isNetworkAvailable())
             showToast(getString(R.string.no_network));

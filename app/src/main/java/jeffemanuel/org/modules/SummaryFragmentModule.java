@@ -11,15 +11,18 @@ import jeffemanuel.org.duckduck.SummaryFragment;
 
 @Module(
         addsTo = ActivityModule.class,
-        injects= {
+        injects = {
                 SummaryFragment.class
         })
+
 public class SummaryFragmentModule {
 
-    public SummaryFragmentModule(Context context){
-        this.context=context;
+    public SummaryFragmentModule(Context context) {
+        this.context = context;
     }
-Context context;
+
+    Context context;
+
     @Provides
     RecyclerView.LayoutManager provideLayoutManager() {
         return new LinearLayoutManager(context);

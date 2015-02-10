@@ -6,6 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="search">Submit</string>
     <string name="invalid">Invalid Entry.</string>
+    <string name="empty_results_warning">Your query returned nothing!</string>
     <string name="no_results">No Results Acquired.</string>
     <string name="no_network">Check Network Connection</string>
 </resources>
