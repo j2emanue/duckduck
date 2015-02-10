@@ -3,6 +3,7 @@ package jeffemanuel.org.duckduck;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -37,6 +39,10 @@ import jeffemanuel.org.POJOs.RelatedTopic;
 import jeffemanuel.org.common.BaseActivity;
 import jeffemanuel.org.common.BaseFragment;
 import jeffemanuel.org.modules.SummaryFragmentModule;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -60,8 +66,8 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
     @InjectView(R.id.btn_go)
     Button goBtn;
 
-    // private BehaviorSubject<String>jsonParsedSubject= new BehaviorSubject.OnSubscribeFunc<>();
     public SummaryFragment() {
+        //later on we can pass in extras if we need it
     }
 
     @Override
@@ -93,7 +99,7 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
      */
     private void retrieveSearchResults(String url) {
 
-        Timber.d("Retrieving search results from: %s",url);
+        Timber.d("Retrieving search results from: %s", url);
         final ProgressDialog pDialog = new ProgressDialog(getActivity());
         pDialog.setMessage("Loading...");
         pDialog.show();
@@ -127,7 +133,7 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
 
     private void parseData(JSONObject jsonResponse) {
-        Timber.d("parsing json response: %s",jsonResponse);
+        Timber.d("parsing json response: %s", jsonResponse);
 
         if (getActivity() != null && jsonResponse == null) {
             ((ListPageActivity) getActivity()).showToast(getString(R.string.no_results));
@@ -151,8 +157,8 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
         List<SearchItem> searchItems = new ArrayList<SearchItem>();
         //parse the search item data into a searchItem object and send to adapter
-        if(dataModel.getRelatedTopics().isEmpty() && getActivity()!=null ){
-            ((MainActivity)getActivity()).showToast(getString(R.string.empty_results_warning));
+        if (dataModel.getRelatedTopics().isEmpty() && getActivity() != null) {
+            ((MainActivity) getActivity()).showToast(getString(R.string.empty_results_warning));
             return;
         }
 
@@ -187,9 +193,27 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
     public void onClick(View view) {
         if (!TextUtils.isEmpty(et_query.getText())) {
             String URL = BuildURLFromUserQuery(et_query.getText().toString());
-            if(!((BaseActivity)getActivity()).isNetworkAvailable())
-                parseData(new JsonMock());
-            retrieveSearchResults(URL);
+            if (!((BaseActivity) getActivity()).isNetworkAvailable()) {
+                //if no network fake the call for demo/testing
+                fakeApiCall(1).subscribe(new Subscriber<JSONObject>() {
+                    @Override
+                    public void onCompleted() {
+                        Toast.makeText(getActivity(), "mocking json", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        //todo handle errors
+                    }
+
+                    @Override
+                    public void onNext(JSONObject jsonMock) {
+                        parseData(jsonMock);
+                    }
+                });
+
+            } else
+                retrieveSearchResults(URL);
         } else
             ((ListPageActivity) getActivity()).showToast(getString(R.string.invalid));
     }
@@ -209,6 +233,25 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
                 .appendQueryParameter("pretty", "1");
 
         return builder.build().toString();
+    }
+
+    /**
+     *
+     * @param delay seconds to fake delay
+     * @return an observable fake api call. Subscribers can call onNext to get the
+     * faked json response
+     */
+    public static Observable<JSONObject> fakeApiCall(final long delay) {
+        return Observable.create(new Observable.OnSubscribe<JSONObject>() {
+            @Override
+            public void call(Subscriber<? super JSONObject> subscriber) {
+                // simulate I/O latency
+                SystemClock.sleep(delay);
+                final JsonMock fakeJson = new JsonMock();
+                subscriber.onNext(fakeJson);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     private void playSound() {
