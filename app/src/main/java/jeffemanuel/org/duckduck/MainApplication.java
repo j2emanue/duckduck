@@ -13,6 +13,7 @@ import java.util.List;
 
 import dagger.ObjectGraph;
 import jeffemanuel.org.modules.ActivityModule;
+import timber.log.Timber;
 
 /**
  * Created by J Emanuel on 10/30/14.
@@ -33,7 +34,12 @@ public class MainApplication extends Application {
         super.onCreate();
        Object[] modules = getModules().toArray();
         objectGraph = ObjectGraph.create(modules);
-       // objectGraph.inject(this);
+       if(BuildConfig.DEBUG){
+           Timber.plant(new Timber.DebugTree());
+       }
+        else{
+           Timber.plant(new CrashReportTree());
+       }
         mInstance = this;
     }
 
@@ -91,5 +97,13 @@ public class MainApplication extends Application {
      */
     public  ObjectGraph createScopedGraph(Object... module) {
         return  objectGraph.plus(module);
+    }
+
+    private static class CrashReportTree extends Timber.HollowTree{
+        @Override
+        public void i(String message, Object... args) {
+            super.i(message, args);
+            //TODO can do crash analytic logging,override other methods accordingly
+        }
     }
 }

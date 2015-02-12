@@ -1,5 +1,6 @@
 package jeffemanuel.org.duckduck;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +18,6 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,12 +32,14 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import jeffemanuel.org.Mock.JsonMock;
 import jeffemanuel.org.POJOs.DuckDataModel;
 import jeffemanuel.org.POJOs.Icon;
 import jeffemanuel.org.POJOs.RelatedTopic;
 import jeffemanuel.org.common.BaseActivity;
 import jeffemanuel.org.common.BaseFragment;
+import jeffemanuel.org.common.interfaces.Listener;
 import jeffemanuel.org.modules.SummaryFragmentModule;
 import rx.Observable;
 import rx.Subscriber;
@@ -49,11 +51,13 @@ import timber.log.Timber;
  * Retrieves Json response from duckduck go authority and displays
  * recyclerView on parsed response while playing a sound.
  */
-public class SummaryFragment extends BaseFragment implements View.OnClickListener {
+public class SummaryFragment extends BaseFragment {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private RecyclerListAdapter mAdapter;
+
+    private Listener mListener;
 
     //inject a layoutManager
     @Inject
@@ -76,6 +80,21 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
         ButterKnife.reset(this);
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Timber.tag(TAG);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (!(activity instanceof ListPageActivity))
+            throw new ClassCastException("Activity must be instance of ListPageActivity");
+        else {
+            mListener = (Listener) activity;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,15 +103,13 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
         //for view injection
         ButterKnife.inject(this, rootView);
 
-        goBtn.setOnClickListener(this);
         mRecyclerView.setHasFixedSize(true);
-
         mRecyclerView.setLayoutManager(mLayoutManager);
         return rootView;
     }
 
     /**
-     * Retrieves json object using GET asynchronously. Parses the json response and plays a sound
+     * Retrieves json object using http GET asynchronously. Parses the json response and plays a sound
      * on response success.
      *
      * @param url - full duckduckgo url with query string
@@ -101,7 +118,7 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
         Timber.d("Retrieving search results from: %s", url);
         final ProgressDialog pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Loading...");
+        pDialog.setMessage(getString(R.string.loading_message));
         pDialog.show();
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
@@ -119,11 +136,10 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                Timber.d("Error: %s", error.getMessage());
                 // hide the progress dialog
                 pDialog.hide();
-                if (getActivity() instanceof ListPageActivity)
-                    ((ListPageActivity) getActivity()).showToast("Error: " + error.getMessage());
+                mListener.showToast("Error: " + error.getMessage());
             }
         });
 
@@ -136,7 +152,7 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
         Timber.d("parsing json response: %s", jsonResponse);
 
         if (getActivity() != null && jsonResponse == null) {
-            ((ListPageActivity) getActivity()).showToast(getString(R.string.no_results));
+            mListener.showToast(getString(R.string.no_results));
             return;
         }
         DuckDataModel dataModel;
@@ -189,9 +205,13 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    @Override
+    @OnClick({R.id.btn_go})
     public void onClick(View view) {
-        if (!TextUtils.isEmpty(et_query.getText())) {
+        handleGoBtnClicked();
+    }
+
+    private void handleGoBtnClicked() {
+        if ( ! TextUtils.isEmpty(et_query.getText())) {
             String URL = BuildURLFromUserQuery(et_query.getText().toString());
             if (!((BaseActivity) getActivity()).isNetworkAvailable()) {
                 //if no network fake the call for demo/testing
@@ -237,7 +257,7 @@ public class SummaryFragment extends BaseFragment implements View.OnClickListene
 
     /**
      *
-     * @param delay seconds to fake delay
+     * @param delay - seconds to fake delay
      * @return an observable fake api call. Subscribers can call onNext to get the
      * faked json response
      */

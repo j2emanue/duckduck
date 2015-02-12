@@ -9,4 +9,5 @@
     <string name="empty_results_warning">Your query returned nothing!</string>
     <string name="no_results">No Results Acquired.</string>
     <string name="no_network">Check Network Connection</string>
+    <string name="loading_message">Loading...</string>
 </resources>

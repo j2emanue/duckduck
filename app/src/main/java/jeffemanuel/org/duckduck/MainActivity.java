@@ -11,14 +11,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import jeffemanuel.org.modules.MainActivityModule;
-import rx.Observable;
 
 
 public class MainActivity extends ListPageActivity {
 
     @Inject
-    SharedPreferences preferences;
-    Observable<String> sharedPrefObservable;
+    SharedPreferences preferences;//not used yet
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

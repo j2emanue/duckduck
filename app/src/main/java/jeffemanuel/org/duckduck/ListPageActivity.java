@@ -13,8 +13,9 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import jeffemanuel.org.common.BaseActivity;
+import jeffemanuel.org.common.interfaces.Listener;
 
-public abstract class ListPageActivity extends BaseActivity {
+public abstract class ListPageActivity extends BaseActivity implements Listener {
 
     private SoundPool mSoundPool;
     private int mSoundID;
@@ -27,10 +28,8 @@ public abstract class ListPageActivity extends BaseActivity {
     }
 
 
-    public void loadBrandSound(){
-
+    public void loadBrandSound() {
         mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-
         mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 
             @Override
@@ -39,27 +38,24 @@ public abstract class ListPageActivity extends BaseActivity {
             }
         });
         mSoundID = mSoundPool.load(this, R.raw.ducksound, 1);
-
-
     }
 
-
-@Inject AudioManager am;
+    @Inject
+    AudioManager am;
     public void playBrandSound() {
-        int volume_level= am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int volume_level = am.getStreamVolume(AudioManager.STREAM_MUSIC);
         // Is the sound loaded already ?
-        if (loaded ) {
+        if (loaded) {
             mSoundPool.play(mSoundID, volume_level, volume_level, 1, 0, 1f);
         }
     }
 
     /**
-     *
      * @param msg text to show in toast
      */
 
-
-    public void showToast(String msg){
+    @Override
+    public void showToast(String msg) {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.toast_layout,
                 (ViewGroup) findViewById(R.id.toast_layout_root));
