@@ -245,6 +245,9 @@ public class SummaryFragment extends BaseFragment {
      */
     protected String BuildURLFromUserQuery(String query) {
 
+        if(TextUtils.isEmpty(query))
+            return null;
+
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(Consts.SCHEME)
                 .authority(Consts.AUTHORITY)

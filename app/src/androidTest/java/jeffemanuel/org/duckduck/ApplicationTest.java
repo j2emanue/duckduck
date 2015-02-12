@@ -3,8 +3,6 @@ package jeffemanuel.org.duckduck;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.Button;
 
-import org.mockito.Mockito;
-
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
@@ -28,6 +26,7 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
 
         goBtn = (Button) mActivity.findViewById(
                 R.id.btn_go);
+
     }
     @Override
     protected void tearDown() throws Exception {
@@ -40,6 +39,7 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
 
     public void isLayoutValid(){
         assertNotNull(goBtn);
+        assertNotNull((goBtn.getText()));
         //assertNotNull(et_query);
         // assertTrue(mActivity.isNetworkAvailable());
         //assertNotNull(et_query.getText());
@@ -47,12 +47,13 @@ public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivi
     }
 
     //todo resolve testing issues
-    public void testSomething(){
-
-
-
-MainApplication mockApplication = Mockito.mock(MainApplication.class);
-
+    public void testBuildURLFromUserQuery(){
+        SummaryFragment frag = new SummaryFragment();
+        String url=frag.BuildURLFromUserQuery("facebook");
+        assertNotNull(url);
+        assertEquals("http://api.duckduckgo.com/?q=facebook&format=json&pretty=1",url);
+        url = frag.BuildURLFromUserQuery(null);
+        assertNull(url);
     }
 
 }
