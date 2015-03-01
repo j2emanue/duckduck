@@ -6,8 +6,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
-import java.util.List;
-
 import dagger.ObjectGraph;
 import jeffemanuel.org.I_ModuleProvider;
 import jeffemanuel.org.duckduck.MainApplication;
@@ -41,6 +39,5 @@ public abstract class BaseActivity extends Activity implements I_ModuleProvider 
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-    /**sub classes should provide dagger module here for scoped injection*/
-    public abstract List<Object> getModules();
+
 }

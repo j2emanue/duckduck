@@ -243,6 +243,7 @@ public class SummaryFragment extends BaseFragment {
      * @param query users query from search entry
      * @return sample of return would be a string such as 'http://api.duckduckgo.com/?q=facebook&format=json&pretty=1'
      */
+
     protected String BuildURLFromUserQuery(String query) {
 
         if(TextUtils.isEmpty(query))

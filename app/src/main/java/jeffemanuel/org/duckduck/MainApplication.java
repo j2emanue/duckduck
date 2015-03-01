@@ -32,14 +32,13 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-       Object[] modules = getModules().toArray();
+        Object[] modules = getModules().toArray();
         objectGraph = ObjectGraph.create(modules);
-       if(BuildConfig.DEBUG){
-           Timber.plant(new Timber.DebugTree());
-       }
-        else{
-           Timber.plant(new CrashReportTree());
-       }
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new CrashReportTree());
+        }
         mInstance = this;
     }
 
@@ -80,6 +79,7 @@ public class MainApplication extends Application {
             mRequestQueue.cancelAll(tag);
         }
     }
+
     protected List<Object> getModules() {
 
         return Arrays.<Object>asList(
@@ -93,13 +93,14 @@ public class MainApplication extends Application {
 
     /*makes it easier on memory to create scoped graphs. each activity should override
     getModule and provide its own module. Add that module to the graph by calling
-    this method which creates a copy of the current graph.
+    this method which creates a copy of the current graph.De-reference copy when activity destroyed
+    clean up.
      */
-    public  ObjectGraph createScopedGraph(Object... module) {
-        return  objectGraph.plus(module);
+    public ObjectGraph createScopedGraph(Object... module) {
+        return objectGraph.plus(module);
     }
 
-    private static class CrashReportTree extends Timber.HollowTree{
+    private static class CrashReportTree extends Timber.HollowTree {
         @Override
         public void i(String message, Object... args) {
             super.i(message, args);

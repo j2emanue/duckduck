@@ -116,4 +116,5 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     public int getItemCount() {
         return mDataset.size();
     }
+
 }

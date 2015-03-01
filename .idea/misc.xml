@@ -3,8 +3,27 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="FireworksProject">
+    <option name="expectedTestCaseNameRegex" />
+    <option name="maxMemory" />
+    <option name="maxSize" value="5" />
+    <option name="enable" value="true" />
+    <option name="enableAutoTask" value="true" />
+    <option name="autoRunTestsDelayTime" value="1000" />
+    <option name="jvmArgs" />
+    <option name="clearLogConsole" value="true" />
+    <option name="autoShowErrorsInEditorAfterCompile" value="true" />
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="TestDoxConfiguration">
+    <option name="createTestIfMissing" value="true" />
+    <option name="deletePackageOccurrences" value="true" />
+  </component>
+  <component name="ToggleTest">
+    <toggle from="*" to="*UnitTest" />
+    <toggle from="*" to="*AtomicTest" />
   </component>
   <component name="masterDetails">
     <states>

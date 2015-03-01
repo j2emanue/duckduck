@@ -1,6 +1,9 @@
 
 apply plugin: 'android'
 apply plugin: 'android-apt'
+apply plugin: 'jacoco'
+
+
 android {
     compileSdkVersion 21
     buildToolsVersion "20.0.0"
@@ -16,6 +19,9 @@ android {
         release {
             //runProguard false
             //  proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug{
+            testCoverageEnabled false
         }
     }
 }
@@ -43,8 +49,13 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
+
+
+
+
 apt {
     arguments {
         resourcePackageName "jeffemanuel.org.duckduck"
     }
 }
+
