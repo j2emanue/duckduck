@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -46,6 +47,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
 
 /**
  * Retrieves Json response from duckduck go authority and displays
@@ -244,7 +246,8 @@ public class SummaryFragment extends BaseFragment {
      * @return sample of return would be a string such as 'http://api.duckduckgo.com/?q=facebook&format=json&pretty=1'
      */
 
-    protected String BuildURLFromUserQuery(String query) {
+
+    protected String BuildURLFromUserQuery(@NonNull String query) {
 
         if(TextUtils.isEmpty(query))
             return null;
